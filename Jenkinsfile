@@ -39,10 +39,12 @@ pipeline {
             }
             steps {
                 dir('src/main') {
-                    sh '''
-                    npm install || true
-                    snyk test --json-file-output=../../snyk_results.json || echo "Snyk scan found vulnerabilities, but continuing..." || true
-                    '''
+                    catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+                        sh '''
+                            npm install
+                            snyk test --json-file-output=../../snyk_results.json
+                            '''
+                    }
                 }
             }
         }

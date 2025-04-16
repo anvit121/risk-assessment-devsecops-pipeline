@@ -41,7 +41,7 @@ pipeline {
                 dir('src/main') {
                     sh '''
                     npm install || true
-                    (snyk test --json-file-output=../../snyk_results.json || echo "Snyk failed, but continuing...")
+                    snyk test --json-file-output=../../snyk_results.json || echo "Snyk scan found vulnerabilities, but continuing..." || true
                     '''
                 }
             }

@@ -12,7 +12,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'Code already checked out by Jenkins'
+                echo 'Code already checked out by Jenkins'
             }
         }
 

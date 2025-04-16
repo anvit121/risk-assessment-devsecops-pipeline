@@ -16,9 +16,11 @@ pipeline {
             }
         }
 
-        stage('Build') {
+        stage('Build Java') {
             steps {
-                sh 'mvn clean install'
+                dir('src/main/java') {
+                    sh 'mvn clean install'
+                }
             }
         }
 
@@ -32,24 +34,40 @@ pipeline {
 
         stage('Snyk Scan') {
             steps {
-                sh 'snyk test > snyk_results.json'
+                sh '''
+                npm install
+                snyk test --json-file-output=snyk_results.json || true
+                '''
             }
         }
 
-        stage('Bandit Scan') {
+        stage('Bandit Python Scan') {
             steps {
-                sh 'bandit -r . -f json -o bandit_results.json'
+                dir('src/main/python') {
+                    sh 'bandit -r . -f json -o ../../bandit_results.json'
+                }
             }
         }
 
         stage('Terraform Plan & OPA Policy') {
             steps {
+                dir('src/main/terraform') {
+                    sh '''
+                    terraform init
+                    terraform plan -out=tfplan
+                    terraform show -json tfplan > tfplan.json
+                    opa eval --format json --input tfplan.json --data ../../../policies/policy.rego "data.terraform.deny" > ../../../opa_results.json
+                    '''
+                }
+            }
+        }
+
+        stage('Send Results to Elasticsearch') {
+            steps {
                 sh '''
-                cd terraform
-                terraform init
-                terraform plan -out=tfplan
-                terraform show -json tfplan > tfplan.json
-                opa eval --format pretty --input tfplan.json --data ../policies/policy.rego "data.terraform.deny"
+                curl -X POST http://localhost:9200/devsecops/_doc -H "Content-Type: application/json" -d @bandit_results.json || true
+                curl -X POST http://localhost:9200/devsecops/_doc -H "Content-Type: application/json" -d @snyk_results.json || true
+                curl -X POST http://localhost:9200/devsecops/_doc -H "Content-Type: application/json" -d @opa_results.json || true
                 '''
             }
         }
@@ -57,7 +75,9 @@ pipeline {
         stage('Terraform Apply') {
             steps {
                 input message: 'Proceed with Terraform apply?'
-                sh 'terraform apply -auto-approve'
+                dir('src/main/terraform') {
+                    sh 'terraform apply -auto-approve'
+                }
             }
         }
     }

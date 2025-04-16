@@ -60,14 +60,20 @@ pipeline {
             steps {
                 dir('src/main/terraform') {
                     sh '''
+                    set -e
+                    echo "[INFO] Initializing Terraform"
                     terraform init
+                    echo "[INFO] Running terraform plan"
                     terraform plan -out=tfplan
+                    echo "[INFO] Converting terraform plan to JSON"
                     terraform show -json tfplan > tfplan.json
+                    echo "[INFO] Evaluating OPA policy"
                     opa eval --format json --input tfplan.json --data ../../../policies/policy.rego "data.terraform.deny" > ../../../opa_results.json
                     '''
                 }
             }
         }
+
 
         stage('Send Results to Elasticsearch') {
             steps {

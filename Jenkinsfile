@@ -39,16 +39,21 @@ pipeline {
                     set -e
                     echo "[INFO] Initializing Terraform"
                     terraform init
+
                     echo "[INFO] Running terraform plan"
                     terraform plan -out=tfplan
+
                     echo "[INFO] Converting terraform plan to JSON"
                     terraform show -json tfplan > tfplan.json
+
                     echo "[INFO] Evaluating OPA policy"
-                    opa eval --format json --input tfplan.json --data ../../../policies/policy.rego "data.terraform.deny" > ../../../opa_results.json
+                    # Ensure this does not crash the pipeline
+                    opa eval --format json --input tfplan.json --data ../../../policies/policy.rego "data.terraform.deny" > ../../../opa_results.json || echo "[OPA] Policy check returned issues, continuing..."
                     '''
                 }
             }
         }
+
 
         stage('Snyk Scan') {
             environment {

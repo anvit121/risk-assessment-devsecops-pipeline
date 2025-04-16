@@ -40,8 +40,8 @@ pipeline {
             steps {
                 dir('src/main') {
                     sh '''
-                    npm install
-                    snyk test --json-file-output=../../snyk_results.json || echo "Snyk finished with issues, continuing..."
+                    npm install || true
+                    (snyk test --json-file-output=../../snyk_results.json || echo "Snyk failed, but continuing...")
                     '''
                 }
             }

@@ -1,11 +1,11 @@
 pipeline {
     agent any
 
-    tools {
+/*    tools {
         maven 'maven'
     }
 
-/*    environment {
+    environment {
         SONARQUBE_SCANNER = tool 'SonarQubeScanner'
     }
 */
@@ -16,7 +16,7 @@ pipeline {
             }
         }
 
-        stage('Build Java') {
+/*        stage('Build Java') {
             steps {
                 dir('src/main/java') {
                     sh 'mvn clean install'
@@ -24,7 +24,7 @@ pipeline {
             }
         }
 
-/*        stage('SonarQube Scan') {
+        stage('SonarQube Scan') {
             steps {
                 withSonarQubeEnv('SonarQubeScanner') {
                     sh 'sonar-scanner'

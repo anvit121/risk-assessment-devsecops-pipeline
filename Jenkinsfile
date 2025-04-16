@@ -41,7 +41,7 @@ pipeline {
                 dir('src/main') {
                     sh '''
                     npm install
-                    snyk test --json-file-output=../../snyk_results.json || true
+                    bash -c "snyk test --json-file-output=../../snyk_results.json || true"
                     '''
                 }
             }

@@ -35,11 +35,12 @@ pipeline {
 
         stage('Snyk Scan') {
             steps {
-                dir('src/main/') {
+                dir('src/main') {
                     sh '''
-                    sudo npm install
-                    snyk test --json-file-output=snyk_results.json || true
-                }    '''
+                        npm install
+                        snyk test --json-file-output=../../snyk_results.json || true
+                        '''
+                }
             }
         }
 

@@ -34,15 +34,19 @@ pipeline {
 */
 
         stage('Snyk Scan') {
+            environment {
+                SNYK_TOKEN = credentials('SNYK_TOKEN') // Automatically pulled from Jenkins secret store
+            }
             steps {
                 dir('src/main') {
                     sh '''
-                        npm install
-                        snyk test --json-file-output=../../snyk_results.json || true
-                        '''
+                    npm install
+                    snyk test --json-file-output=../../snyk_results.json || true
+                    '''
                 }
             }
         }
+
 
         stage('Bandit Python Scan') {
             steps {

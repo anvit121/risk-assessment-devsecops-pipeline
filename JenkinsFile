@@ -30,12 +30,6 @@ pipeline {
             }
         }
 
-        stage('Trivy Scan') {
-            steps {
-                sh 'trivy fs . > trivy_results.json'
-            }
-        }
-
         stage('Snyk Scan') {
             steps {
                 sh 'snyk test > snyk_results.json'

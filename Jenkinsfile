@@ -12,7 +12,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/anvit121/risk-assessment-devsecops-pipeline.git'
+                git 'Code already checked out by Jenkins'
             }
         }
 

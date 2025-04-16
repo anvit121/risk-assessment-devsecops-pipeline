@@ -1,0 +1,7 @@
+output.elasticsearch:
+  hosts: ["localhost:9200"]
+
+filebeat.inputs:
+  - type: log
+    paths:
+      - /var/log/jenkins/jenkins.log

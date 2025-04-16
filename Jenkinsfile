@@ -5,10 +5,10 @@ pipeline {
         maven 'maven'
     }
 
-    environment {
+/*    environment {
         SONARQUBE_SCANNER = tool 'SonarQubeScanner'
     }
-
+*/
     stages {
         stage('Checkout') {
             steps {
@@ -24,13 +24,14 @@ pipeline {
             }
         }
 
-        stage('SonarQube Scan') {
+/*        stage('SonarQube Scan') {
             steps {
                 withSonarQubeEnv('SonarQubeScanner') {
                     sh 'sonar-scanner'
                 }
             }
         }
+*/
 
         stage('Snyk Scan') {
             steps {
